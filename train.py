@@ -1,5 +1,5 @@
 from mltools import *
-
+import pandas as pd
 #compile_args = {"optimizer": Adam(), "loss":"categorical_crossentropy", "metrics":["accuracy"]}
 
 study_name = "cnn_mnist"
@@ -26,10 +26,11 @@ def train(compile_args=None, fit_args=None, optuna=True):
     return ok.trial_best_value
 
   if optuna:
-    history = {"lr":[],"best_values":[]}
+    history = {"lr":[],"best_values":[],"optimizer":[]}
     for i in range(10):
       ok.optimize(objective, timeout = 2*60)
       history["lr"].append(ok.best_trial.params["lr"])
+      history["optimizer"].append(ok.best_trial.params["optimizer"])
       history["best_values"].append(ok.best_trial.value)
       trial_num = ok.best_trial.number
       weight_file = ''.join([study_name,"_model_",
@@ -44,6 +45,8 @@ def train(compile_args=None, fit_args=None, optuna=True):
 
 def main():
     trained_model, history = train()
+    df = pd.DataFrame.from_dict(history)
+    df.to_csv("history.csv")
     trained_model.save("mnist_cnn.h5")
     print("evaluation")
     trained_model.evaluate(x_test,y_test)
