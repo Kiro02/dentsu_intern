@@ -43,7 +43,7 @@ def build_network(optimizer=SGD(lr=0.001)):
               metrics=['accuracy'])
   return model
 
- def get_optimizer(name, lr):
+def get_optimizer(name, lr):
   optimizers = ["adam","sgd", "rmsprop", "adagrad", "adadelta"]
   if name == optimizers[0]:
     return Adam(lr=lr)

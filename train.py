@@ -11,7 +11,7 @@ ok = OptKeras(study_name=study_name,
 
 x_train, y_train, x_test, y_test = prepare_data()
 
-def train(compile_args=None, fit_args=None, optuna=True):
+def train(compile_args=None, fit_args=None, optuna=True, ok=ok):
   def objective(trial):
 
     global model
@@ -44,12 +44,12 @@ def train(compile_args=None, fit_args=None, optuna=True):
   return model, history
 
 def main():
-    trained_model, history = train()
+    trained_model, history = train(ok=ok)
     df = pd.DataFrame.from_dict(history)
     df.to_csv("history.csv")
     trained_model.save("mnist_cnn.h5")
     print("evaluation")
     trained_model.evaluate(x_test,y_test)
 
- if __name__ = "__main__":
+if __name__ == "__main__":
      main()
