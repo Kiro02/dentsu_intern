@@ -4,10 +4,10 @@ from keras.models import Sequential
 from keras.initializers import glorot_normal, RandomNormal, Zeros
 from keras.layers import Dense, Activation, Flatten, Dropout, BatchNormalization, Conv2D, MaxPool2D
 from keras.optimizers import Adam, RMSprop, Adagrad, Adadelta, SGD
-import keras.backend as K
 from keras.utils.np_utils import to_categorical
-from optkeras.optkeras import OptKeras
-import optkeras
+from sklearn.metrics import precision_score as PS
+from sklearn.metrics import recall_score as RS
+from sklearn.metrics import f1_score as F1
 
 def prepare_data():
   (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -21,7 +21,7 @@ def prepare_data():
   y_train = to_categorical(y_train)
   return x_train, y_train, x_test, y_test
 
-def build_network(optimizer=SGD(lr=0.001)):
+def build_network():
   model = Sequential()
   model.add(Conv2D(32, kernel_size=(3, 3),activation='relu',kernel_initializer='he_normal',input_shape=(28,28,1)))
   model.add(Conv2D(32, kernel_size=(3, 3),activation='relu',kernel_initializer='he_normal'))
@@ -39,19 +39,14 @@ def build_network(optimizer=SGD(lr=0.001)):
   model.add(Dropout(0.25))
   model.add(Dense(10, activation='softmax'))
   model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=optimizer,
+              optimizer="adam",
               metrics=['accuracy'])
   return model
 
-def get_optimizer(name, lr):
-  optimizers = ["adam","sgd", "rmsprop", "adagrad", "adadelta"]
-  if name == optimizers[0]:
-    return Adam(lr=lr)
-  elif name == optimizers[1]:
-    return SGD(lr=lr)
-  elif name == optimizers[2]:
-    return RMSprop(lr=lr)
-  elif name == optimizers[3]:
-    return Adagrad(lr=lr)
-  else:
-    return Adadelta(lr=lr)
+def amax(y):
+  return np.argmax(y, axis=1)
+
+def evaluation(y_test, y_pred):
+    print("test precision:", PS(amax(y_test),amax(y_pred),  labels=range(10), average="macro"))
+    print("test recall:", RS(amax(y_test),amax(y_pred),  labels=range(10), average="macro"))
+    print("test f1 score:", F1(amax(y_test),amax(y_pred),  labels=range(10), average="macro"))

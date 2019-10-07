@@ -1,0 +1,2 @@
+number,state,value,datetime_start,datetime_complete,lr,optimizer,system_attrs__number
+0,TrialState.RUNNING,,2019-09-20 01:25:54.952336,,0.0029305743211378798,sgd,0
